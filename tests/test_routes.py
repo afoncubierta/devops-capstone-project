@@ -8,6 +8,7 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
+from datetime import date
 from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
@@ -123,4 +124,35 @@ class TestAccountService(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
+    def test_acount_defaults(self):
+        """Test default behaviours of Account class"""
+        account = AccountFactory()
+        self.assertIsNotNone(account)
+        self.assertIsNotNone(account.__repr__())
+
+        serialized_account = account.serialize()
+        serialized_account.pop("date_joined")
+
+        deserialized = account.deserialize(serialized_account)
+        self.assertEqual(deserialized.date_joined, date.today())
+
+        
+
     # ADD YOUR TEST CASES HERE ...
+    def test_read_account(self):
+        """It should Read an Account (just created)"""
+        account = self._create_accounts(1)[0]
+        account_id = account.id
+        read_response = self.client.get(f"{BASE_URL}/{account_id}", content_type="application/json")
+        read_json = read_response.get_json()
+        
+        self.assertEqual(read_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(read_json["id"],account_id)
+
+    def test_account_not_found(self):
+        """It should fail with account not found"""
+        account_id = 0
+        read_response = self.client.get(f"{BASE_URL}/{account_id}", content_type="application/json")
+        read_json = read_response.get_json()
+        
+        self.assertEqual(read_response.status_code, status.HTTP_404_NOT_FOUND)
