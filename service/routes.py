@@ -92,7 +92,6 @@ def read_account(id):
     """
     app.logger.info("Request to read an Account")
     app.logger.info(f"Requested to read account id {id}")
-    check_content_type("application/json")
     account = Account.find(by_id=id)
     if account is None:
         # Could not find it, response is 404
