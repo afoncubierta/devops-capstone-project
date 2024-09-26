@@ -4,7 +4,7 @@ Account Service
 This microservice handles the lifecycle of Accounts
 """
 # pylint: disable=unused-import
-from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
+from flask import jsonify, request, make_response, abort   # noqa; F401
 from service.models import Account
 from service.common import status, error_handlers  # HTTP Status Codes
 from . import app  # Import Flask application
@@ -57,10 +57,10 @@ def create_accounts():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
-
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
     """
@@ -68,22 +68,20 @@ def list_accounts():
     This endpoint will provide a list of all accounts
     """
     app.logger.info("Request to list all Accounts")
-    
+
     accounts = Account.all()
     number_of_accounts = len(accounts)
     app.logger.info(f"Retrieved {number_of_accounts} accounts")
     json_message = jsonify([account.serialize() for account in accounts])
     status_code = status.HTTP_200_OK
-    
-        
-    response = make_response(json_message, status_code)    
+
+    response = make_response(json_message, status_code)
     return response
 
 
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
-
 @app.route("/accounts/<id>", methods=["GET"])
 def read_account(id):
     """
@@ -95,15 +93,14 @@ def read_account(id):
     account = Account.find(by_id=id)
     if account is None:
         # Could not find it, response is 404
-        json_message,status_code = error_handlers.not_found("Account not found")
-        
+        json_message, status_code = error_handlers.not_found("Account not found")
+
     else:
         status_code = status.HTTP_200_OK
         json_message = jsonify(account.serialize())
-        
-    response = make_response(json_message, status_code)    
-    return response
 
+    response = make_response(json_message, status_code)
+    return response
 
 
 ######################################################################
@@ -148,8 +145,6 @@ def delete_accounts(account_id):
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
-
-
 def check_content_type(media_type):
     """Checks that the media type is correct"""
     content_type = request.headers.get("Content-Type")
