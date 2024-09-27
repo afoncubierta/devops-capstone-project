@@ -138,8 +138,7 @@ class TestAccountService(TestCase):
 
         deserialized = account.deserialize(serialized_account)
         self.assertEqual(deserialized.date_joined, date.today())
-
-        
+     
 
     # ADD YOUR TEST CASES HERE ...
     def test_read_account(self):
@@ -148,7 +147,7 @@ class TestAccountService(TestCase):
         account_id = account.id
         read_response = self.client.get(f"{BASE_URL}/{account_id}", content_type="application/json")
         read_json = read_response.get_json()
-        
+
         self.assertEqual(read_response.status_code, status.HTTP_200_OK)
         self.assertEqual(read_json["id"],account_id)
 
@@ -157,19 +156,19 @@ class TestAccountService(TestCase):
         account_id = 0
         read_response = self.client.get(f"{BASE_URL}/{account_id}", content_type="application/json")
         read_json = read_response.get_json()
-        
+
         self.assertEqual(read_response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_list_account(self):
         """It should list all accounts"""
         self._create_accounts(5)
-        
+
         read_response = self.client.get(f"{BASE_URL}")
         read_json = read_response.get_json()
         
         self.assertEqual(read_response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(read_json),5)
-    
+
     def test_update_account(self):
         """It should Update an existing Account"""
         # create an Account to update
